@@ -31,15 +31,12 @@ public abstract class AbstractAdilingRequestStreamHandler implements AdilingRequ
         this.myLambdaFunction(inputStream, outputStream, context);
     }
 
-    private <T> T getObjectFromInputStream(InputStream inputStream) throws IOException {
+    protected <T> T getObjectFromInputStream(InputStream inputStream, Class<T> returnedObjectClass) throws IOException {
         JsonNode event = objectMapper.readTree(inputStream);
         JsonNode body = event.findValue("body");
-        Class<T> persistentClass = (Class<T>)
-                ((ParameterizedType)getClass().getGenericSuperclass())
-                        .getActualTypeArguments()[0];
         return objectMapper.treeToValue(
                 objectMapper.readTree(body.asText()),
-                persistentClass);
+                returnedObjectClass);
     }
 
     public abstract void myLambdaFunction(InputStream inputStream, OutputStream outputStream, Context context) throws IOException;
